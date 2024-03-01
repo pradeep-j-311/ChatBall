@@ -1,4 +1,5 @@
 import re
+import pandas as pd
 
 class whatsAppChat: 
 
@@ -14,8 +15,10 @@ class whatsAppChat:
         messages_woDateTime , DateTime = self.extractDateTime(messages)
         # remove username
         Content, Users = self.extractUsers(messages_woDateTime)
+        cols = [DateTime, Users, Content]
+        chat_df = pd.DataFrame(cols, columns=['DateTime', 'User', 'Message Content'])
 
-        return Content, DateTime, Users
+        return chat_df
 
     def extractDateTime(self, messages): 
 
@@ -56,3 +59,9 @@ class whatsAppChat:
                 message_users.append(previous_user)
 
         return cleaned_messages, message_users 
+    
+    def noOfMessages(self, dataframe): 
+        
+        TotalMessages = len(dataframe)
+        
+        return TotalMessages
