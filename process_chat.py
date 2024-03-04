@@ -160,7 +160,7 @@ class whatsAppChat:
         return TotalMessages, NoOfMessages 
 # %%
 
-path = "sample_chats/sample02.txt"
+path = "sample_chats/full_chat_Vidhi.txt"
 chat = whatsAppChat(path)
 df = chat.chat_to_df()
 # %%
