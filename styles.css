@@ -1,0 +1,102 @@
+*{
+    margin: 0; 
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.header { 
+    background-color: lightblue;
+    display: flex; 
+    justify-content: space-between;
+}
+
+.home-pointer { 
+    color: black;
+    font-size: 20px;
+    font-family: "Anta", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    padding: 15px;
+}
+
+.logo-images { 
+    padding: 15px;
+    display: flex;
+}
+
+.logo-image { 
+    padding: 5px;
+}
+
+.page {
+    display: flex;
+    background-color: pink;
+    justify-content: space-around;
+    align-items: stretch;
+
+}
+
+.sidebar { 
+    display: flex;
+    background-color: aquamarine;
+    padding: 20px 20px;
+    border: 1px solid salmon;
+    width: 30%;
+    justify-content: center;
+    align-items: center;
+}
+
+.menu { 
+    border: 1px solid red; 
+}
+
+.content { 
+    display: flex;
+    background-color: azure;
+    border: 1px solid sandybrown;
+    width: 70%;
+    flex-direction: column;
+    align-items: center;
+    display: flex;
+}
+
+.content-header { 
+    padding: 15px;
+    border: 1px solid red; 
+    font-family: "Anta", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+.intro { 
+    border: 1px solid red;
+    margin: 10px;
+    padding: 20px;
+    text-align: left;
+}
+
+.anta { 
+    font-family: "Anta", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.quattrocento-regular {
+    font-family: "Quattrocento", serif;
+    font-weight: 500;
+    font-style: normal;
+  }
+  
+  .quattrocento-bold {
+    font-family: "Quattrocento", serif;
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  p { 
+    line-height: 2em; 
+  }
+  
+  ul { 
+    margin-left: 30px;
+    line-height: 2em;
+  }
