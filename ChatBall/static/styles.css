@@ -105,4 +105,8 @@
     line-height: 2em;
   }
 
+  .image_label { 
+    text-align: center;
+    font-size: larger;
+  }
   

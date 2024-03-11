@@ -3,6 +3,7 @@ import re
 import pandas as pd
 import time 
 import matplotlib.pyplot as plt 
+import matplotlib as mpl
 import seaborn as sns
 from datetime import timedelta
 import click 
@@ -173,20 +174,126 @@ class whatsAppChat:
     
     def barChartTotal(self, dataframe): 
         TotalMessages, chatusers, NoOfMessages = self.overallMetrics(dataframe)
+        mpl.font_manager.FontProperties(fname=mpl.get_cachedir() + '/Humor-Sans.ttf')
+        mpl.font_manager.FontProperties(fname=mpl.get_cachedir() + '/xkcd-script.ttf')
         if len(chatusers) > 4: 
-            fig, ax = plt.subplots(figsize=(16, 12))
-            # Specify a font that includes the required glyphs
-            ax.stem(chatusers, NoOfMessages, label=chatusers)
-            ax.set_title('Breakdown of messages sent')
-            ax.set_ylabel('Number of messages')
-            ax.set_xlabel('Users')
+            with plt.xkcd():
+                fig, ax = plt.subplots(figsize=(16, 12))
+                # Specify a font that includes the required glyphs
+                ax.stem(chatusers, NoOfMessages, label=chatusers)
+                ax.set_title('Breakdown of messages sent', fontfamily='Humor Sans')
+                ax.set_ylabel('Number of messages', fontfamily='Humor Sans')
+                ax.set_xlabel('Users', fontfamily='Humor Sans')
+                plt.xticks(fontfamily='Humor Sans')
+                plt.yticks(fontfamily='Humor Sans')
         else: 
-            fig, ax = plt.subplots(figsize=(10, 8))
-            # Specify a font that includes the required glyphs
-            ax.bar(chatusers, NoOfMessages, label=chatusers)
-            ax.set_title('Breakdown of messages sent')
-            ax.set_ylabel('Number of messages')
-            ax.set_xlabel('Users')
+            with plt.xkcd():
+                fig, ax = plt.subplots(figsize=(10, 8))
+                # Specify a font that includes the required glyphs
+                ax.bar(chatusers, NoOfMessages, label=chatusers)
+                ax.set_title('Breakdown of messages sent', fontfamily='Humor Sans')
+                ax.set_ylabel('Number of messages', fontfamily='Humor Sans')
+                ax.set_xlabel('Users', fontfamily='Humor Sans')
+                plt.xticks(fontfamily='Humor Sans')
+                plt.yticks(fontfamily='Humor Sans')
 
-        
         plt.show()
+
+    def messagesBreakdown(self, dataframe, year, breakdown_unit='day'):
+        year_filter = (dataframe['Year'] == year)
+        fdataframe_year = dataframe[year_filter]
+        if len(fdataframe_year) != 0: 
+            if breakdown_unit == 'day': 
+                col = 'Day_Of_Year'
+            elif breakdown_unit == 'month': 
+                col = 'Month'
+            elif breakdown_unit == 'week': 
+                col = 'Day_Of_Week'
+            else: 
+                return "Enter a valid entry for the breakdown unit."
+            start = min(fdataframe_year[col])
+            end = max(fdataframe_year[col])
+
+            users = fdataframe_year['User'].unique().tolist()
+
+            messagesPerUnit = {} 
+            for user in users: 
+                messagesPerUnit[user] = []
+            messagesPerUnit['Total'] = []
+            messagesPerUnit['Unit'] = []
+
+            for val in range(start, end+1):
+                val_filter = (fdataframe_year[col] == val)
+                fdataframe_unit = fdataframe_year[val_filter]
+                messagesPerUnit['Unit'].append(val)
+                TotalMessages = 0
+
+                if len(fdataframe_unit) != 0:
+                    for user in users: 
+                        user_filter = (fdataframe_unit['User'] == user)
+                        fdataframe_user = fdataframe_unit[user_filter]
+                        messagesPerUnit[user].append(fdataframe_user.shape[0])
+                        TotalMessages += fdataframe_user.shape[0]
+                    messagesPerUnit['Total'].append(TotalMessages)
+                else: 
+                    for user in users: 
+                        messagesPerUnit[user].append(0)
+                    messagesPerUnit['Total'].append(0)
+
+            return messagesPerUnit, breakdown_unit
+        else: 
+            return "No messages sent in {}".format(year)
+        
+    def dayToDate(self, day, year): 
+        form = '%j %Y'
+        date = time.strptime("{} {}".format(day, year), form)
+
+        day_converted = date.tm_mday
+        month = date.tm_mon
+        converted_date = "{}/{}/{}".format(day_converted, month, year)
+
+        return converted_date
+
+    def plotByTime(self, dataframe, year, time_unit='day'): 
+        bdict, _  = self.messagesBreakdown(dataframe, year, breakdown_unit=time_unit)
+        plt.rcParams['font.family'] = 'Humor Sans'
+        fig, axs = plt.subplots(1, 2, figsize=(12, 10))
+
+        x = bdict['Unit']
+
+        for key in bdict: 
+            if (key == 'Unit') or (key == 'Total'): 
+                pass
+            else:
+                with plt.xkcd(): 
+                    axs[0].plot(x, bdict[key], '--', label=key) 
+        
+        axs[0].set_title('Messages sent per {} in {}'.format(time_unit, year))
+        axs[0].set_xlabel('{} of the year'.format(time_unit))
+        axs[0].set_ylabel('Number of messages')
+        axs[0].legend()
+        axs[0].grid()
+
+        TotalMessages = bdict['Total']
+        cum_total = [TotalMessages[0]]
+        
+        for i in range(1, len(TotalMessages)): 
+            cum_sum = TotalMessages[i] + cum_total[-1]
+            cum_total.append(cum_sum)
+
+        axs[1].plot(x, cum_total, 'g--x')
+        axs[1].set_title('Total messages sent per {} in {}'.format(time_unit, year))
+        axs[1].set_xlabel('{} of the year'.format(time_unit))
+        axs[1].set_ylabel('Number of messages')
+        axs[1].grid()
+
+        plt.show()
+
+        return bdict
+    
+
+    
+
+
+
+
